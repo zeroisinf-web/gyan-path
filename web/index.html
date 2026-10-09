@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Privacy lock: only this site's own files load; the one exception is the privacy-enhanced YouTube player, and only after you press play. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; frame-src https://www.youtube-nocookie.com; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#1d4f91">
+<meta name="description" content="NCERT की हर सामग्री – शिक्षार्थी के नज़रिए से, एक ही जगह। Unofficial, learner-first index of NCERT resources.">
+<title>ज्ञान पथ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="brand" id="brand" href="#/"></a>
+  <div class="top-actions">
+    <a class="icon-btn" id="searchBtn" href="#/search">🔍</a>
+    <a class="icon-btn" id="newBtn" href="#/new">🔔<span class="count" id="newCount" hidden></span></a>
+    <button class="icon-btn lang" id="langBtn" type="button">EN</button>
+    <a class="icon-btn" id="aboutBtn" href="#/about">⚙️</a>
+  </div>
+</header>
+<p class="offline-bar" id="offline" role="status"></p>
+<div class="layout">
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+<footer class="foot" id="foot"></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

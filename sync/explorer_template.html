@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCERT URL Explorer</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#1d2330;--muted:#5d6675;--line:#e1e4ea;--accent:#1f5fa8;--accent-soft:#e7f0fb;--tag:#eef0f4;--warn:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171c;--panel:#1c2027;--ink:#e6e8ec;--muted:#9aa3b2;--line:#2c323c;--accent:#7cb2f0;--accent-soft:#1f2c3d;--tag:#262b34;--warn:#f2867d}}
+:root[data-theme="dark"]{--bg:#14171c;--panel:#1c2027;--ink:#e6e8ec;--muted:#9aa3b2;--line:#2c323c;--accent:#7cb2f0;--accent-soft:#1f2c3d;--tag:#262b34;--warn:#f2867d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:16px 20px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{font-size:18px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:12.5px}
+.wrap{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 70px)}
+nav{border-right:1px solid var(--line);background:var(--panel);overflow:auto;max-height:calc(100vh - 70px);position:sticky;top:0;padding:8px 0}
+nav details{border-bottom:1px solid var(--line)}
+nav summary{cursor:pointer;padding:8px 14px;font-weight:600;display:flex;justify-content:space-between;gap:8px;list-style:none}
+nav summary::-webkit-details-marker{display:none}
+nav summary::before{content:"▸";color:var(--muted);margin-right:4px}
+nav details[open]>summary::before{content:"▾"}
+nav summary span:first-of-type{flex:1}
+.cnt{color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+nav button{display:flex;width:100%;justify-content:space-between;gap:8px;text-align:left;background:none;border:0;color:var(--ink);padding:5px 14px 5px 30px;cursor:pointer;font:inherit;font-size:13px}
+nav button:hover{background:var(--accent-soft)}
+nav button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav .all{padding-left:14px;font-weight:600}
+main{padding:14px 18px;min-width:0}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.bar input,.bar select{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+.bar input[type=search]{flex:1;min-width:200px}
+.bar button{font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0!important;border-radius:0!important;padding:7px 12px}
+.seg button.on{background:var(--accent);color:#fff}
+.note{font-size:12.5px;margin-top:3px;padding:4px 7px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 4px 4px 0}
+.tag.lens{background:var(--accent-soft);color:var(--accent)}
+.explain{font-size:13px;margin:-2px 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.crumb{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.crumb b{color:var(--ink)}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;table-layout:fixed}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);background:var(--tag);cursor:pointer;user-select:none}
+td a{color:var(--accent);word-break:break-all;text-decoration:none}
+td a:hover{text-decoration:underline}
+.txt{color:var(--muted);font-size:12.5px;margin-top:2px;overflow-wrap:anywhere}
+.tag{display:inline-block;background:var(--tag);border-radius:4px;padding:1px 6px;font-size:11.5px;margin:1px 2px 1px 0;color:var(--muted)}
+.num{text-align:right;font-variant-numeric:tabular-nums;width:72px}
+.st{color:var(--warn);font-size:12px}
+.pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px;color:var(--muted);font-size:13px}
+.pager button{font:inherit;padding:5px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer}
+.pager button:disabled{opacity:.4;cursor:default}
+@media (max-width:820px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:300px;border-right:0;border-bottom:1px solid var(--line)}
+ header,main{padding-left:16px;padding-right:16px}.col-topic,.col-type{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>NCERT website — every unique URL, by what it delivers to the learner</h1>
+  <div class="sub" id="meta"></div>
+</header>
+<div class="wrap">
+  <nav id="tree"></nav>
+  <main>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="View by">
+        <button id="m-lens" class="on">Student lens</button><button id="m-site">Site structure</button>
+      </div>
+      <input type="search" id="q" placeholder="Search URL, link text, note or folder…">
+      <select id="topic"><option value="">All topics</option></select>
+      <select id="rep"><option value="0">Any repeat count</option><option value="2">Linked from 2+ pages</option><option value="5">Linked from 5+ pages</option><option value="20">Linked from 20+ pages</option></select>
+      <button id="csv" title="Download the rows currently shown as CSV">Export CSV</button>
+    </div>
+    <div class="crumb" id="crumb"></div>
+    <div class="explain" id="explain" hidden></div>
+    <table>
+      <colgroup><col><col class="col-topic" style="width:190px"><col class="col-type" style="width:100px"><col style="width:80px"></colgroup>
+      <thead><tr><th data-k="4">URL, link text &amp; what it is for</th><th data-k="2" class="col-topic" id="midhead">Topic</th><th data-k="3" class="col-type">Type</th><th data-k="7" class="num">Linked from</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="pager"><span id="pinfo"></span><button id="prev">‹ Prev</button><button id="next">Next ›</button></div>
+  </main>
+</div>
+<script>
+// [0 cat, 1 section, 2 topic, 3 type, 4 url, 5 text, 6 title, 7 linkedFrom, 8 lang, 9 status, 10 subSection, 11 reaches, 12 product, 13 note]
+const D=/*DATA*/[];
+const SECTION_TITLES=/*SECTION_TITLES*/{};
+const ROLE_EXPLAIN=/*ROLE_EXPLAIN*/{};
+const PAGE=200;
+let mode="lens",cat="",sec="",page=0,sortK=-1,sortDir=1,view=[];
+try{mode=localStorage.getItem("ncert-mode")||"lens"}catch(e){}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+$("meta").textContent=`${D.length.toLocaleString()} unique URLs from {{CRAWLED}} crawled pages (English + Hindi versions). `+
+  `{{EXCLUDED}} individual book / e-book page URLs left out — the selector pages (e.g. textbook.php) are kept. `+
+  `{{REMOVED}} broken URLs removed.`;
+const L1=()=>mode==="lens"?11:0, L2=()=>mode==="lens"?12:1;
+
+function buildTree(){
+  const a=L1(),b=L2(),tree={};
+  D.forEach(r=>{(tree[r[a]]??={});tree[r[a]][r[b]]=(tree[r[a]][r[b]]||0)+1});
+  let h=`<button class="all${!cat?" on":""}" data-c="" data-s=""><span>All URLs</span><span class="cnt">${D.length}</span></button>`;
+  const keys=Object.keys(tree); if(mode==="lens")keys.sort();
+  for(const c of keys){
+    const secs=Object.entries(tree[c]).sort((x,y)=>y[1]-x[1]);
+    const tot=secs.reduce((x,y)=>x+y[1],0);
+    h+=`<details${c===cat?" open":""}><summary><span>${esc(c)}</span><span class="cnt">${tot}</span></summary>`+
+       `<button data-c="${esc(c)}" data-s=""><span>All in this group</span><span class="cnt">${tot}</span></button>`+
+       secs.map(([s,n])=>`<button data-c="${esc(c)}" data-s="${esc(s)}" title="${esc(SECTION_TITLES[s]||s)}"><span>${esc(s)}</span><span class="cnt">${n}</span></button>`).join("")+`</details>`;
+  }
+  $("tree").innerHTML=h;
+  $("m-lens").classList.toggle("on",mode==="lens");$("m-site").classList.toggle("on",mode==="site");
+  $("midhead").textContent=mode==="lens"?"Section":"Topic";
+}
+function setMode(m){mode=m;cat="";sec="";page=0;try{localStorage.setItem("ncert-mode",m)}catch(e){};buildTree();render()}
+$("m-lens").onclick=()=>setMode("lens");$("m-site").onclick=()=>setMode("site");
+$("tree").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("nav button.on").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  cat=b.dataset.c;sec=b.dataset.s;page=0;render()});
+[...new Set(D.map(r=>r[2]))].sort().forEach(t=>$("topic").insertAdjacentHTML("beforeend",`<option>${esc(t)}</option>`));
+["q","topic","rep"].forEach(id=>$(id).addEventListener("input",()=>{page=0;render()}));
+document.querySelectorAll("th").forEach(th=>th.addEventListener("click",()=>{let k=+th.dataset.k;
+  if(k===2&&mode==="lens")k=1;sortDir=sortK===k?-sortDir:(k===7?-1:1);sortK=k;render()}));
+$("prev").onclick=()=>{page--;render()};$("next").onclick=()=>{page++;render()};
+
+function render(){
+  const q=$("q").value.trim().toLowerCase(),t=$("topic").value,rep=+$("rep").value,a=L1(),b=L2();
+  view=D.filter(r=>(!cat||r[a]===cat)&&(!sec||r[b]===sec)&&(!t||r[2]===t)&&r[7]>=rep&&
+    (!q||(r[4]+" "+r[5]+" "+r[6]+" "+r[10]+" "+r[13]).toLowerCase().includes(q)));
+  if(sortK>=0)view.sort((x,y)=>(x[sortK]>y[sortK]?1:x[sortK]<y[sortK]?-1:0)*sortDir);
+  const pages=Math.max(1,Math.ceil(view.length/PAGE));page=Math.min(Math.max(page,0),pages-1);
+  $("crumb").innerHTML=`<b>${esc(cat||"All URLs")}</b>${sec?" › <b>"+esc(sec)+"</b>"+(SECTION_TITLES[sec]?" — "+esc(SECTION_TITLES[sec]):""):""} · ${view.length.toLocaleString()} URLs`;
+  const ex=mode==="lens"&&ROLE_EXPLAIN[cat];$("explain").hidden=!ex;if(ex)$("explain").textContent=ex;
+  $("rows").innerHTML=view.slice(page*PAGE,(page+1)*PAGE).map(r=>
+    `<tr><td><a href="${esc(r[4])}" target="_blank" rel="noopener">${esc(r[4])}</a>`+
+    (r[5]||r[6]?`<div class="txt">${esc(r[5]||r[6])}</div>`:"")+
+    (r[13]?`<div class="note">${esc(r[13])}</div>`:"")+
+    `<div>${mode==="lens"?(!cat?`<span class="tag lens">${esc(r[11])}</span>`:"")+(!sec?`<span class="tag">${esc(r[12])}</span>`:""):
+      (!cat?`<span class="tag">${esc(r[0])}</span>`:"")+(!sec?`<span class="tag">${esc(r[1])}</span>`:"")+`<span class="tag lens">${esc(r[11])}</span>`}`+
+    `${r[10]?`<span class="tag">› ${esc(r[10])}</span>`:""}${r[8]?`<span class="tag">${esc(r[8])}</span>`:""}${r[9]?`<span class="st">⚠ ${esc(r[9])}</span>`:""}</div></td>`+
+    `<td class="col-topic">${esc(mode==="lens"?r[1]:r[2])}</td><td class="col-type">${esc(r[3])}</td><td class="num">${r[7]}</td></tr>`).join("")||
+    `<tr><td colspan="4" style="color:var(--muted)">No URLs match.</td></tr>`;
+  $("pinfo").textContent=`Page ${page+1} of ${pages}`;$("prev").disabled=page===0;$("next").disabled=page>=pages-1;
+}
+$("csv").onclick=()=>{
+  const head=["Category","Section","Topic","Type","URL","Link text","Page title","Linked from","Language","Status","Sub-section","Reaches learner","Eventual product for learner","What it is / used for"];
+  const csv=[head,...view].map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const el=document.createElement("a");el.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv"}));
+  el.download="ncert_urls.csv";el.click();
+};
+buildTree();render();
+</script>
+</body>
+</html>

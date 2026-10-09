@@ -1,0 +1,9 @@
+# built output
+site/
+reports/
+__pycache__/
+*.tmp
+
+# working state lives in the GitHub Actions cache; only the change history is versioned
+sync/state/*
+!sync/state/history.json
