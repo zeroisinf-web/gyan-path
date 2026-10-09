@@ -146,7 +146,10 @@ def build_items(cat):
               "c": dedupe.classes(url, texts), "z": int(size) if size and str(size).isdigit() else None,
               "d": iso_date(ls.get("last_modified")), "r": row["Linked from (pages)"],
               "pp": parent if kind != "page" and parent and parent.rstrip("/") not in ("https://ncert.nic.in", "https://ncert.nic.in/index.php") else None,
-              "_sig": f"{ls.get('last_modified')}|{size}" if (ls.get("last_modified") or size) else None}
+              # only NCERT's own files are tracked for "updated": outside sites and web pages report a
+              # new Last-Modified on every visit, which would flood What's new
+              "_sig": (f"{ls.get('last_modified')}|{size}"
+                       if host == "ncert.nic.in" and kind not in ("page", "link") and (ls.get("last_modified") or size) else None)}
         if not it["t"] and not it["th"]:
             it["t"] = dedupe.from_filename(url) or host
         items.append(it)
@@ -265,6 +268,15 @@ def build_videos(cat):
     return {"channels": channels_out, "collections": collections_out, "playlists": playlists}
 
 
+def is_ncert_file(url):
+    """A file on ncert.nic.in (not a page). Textbook changes have no url and always count."""
+    if not url:
+        return True
+    p = urlsplit(url)
+    return p.hostname == "ncert.nic.in" and bool(re.search(r"\.[a-z0-9]{2,4}$", p.path.lower())) \
+        and not re.search(r"\.(php|html?)$", p.path.lower())
+
+
 def update_history(items, textbooks):
     """first-seen dates + file signatures -> changes feed. The very first run is a silent baseline."""
     hist = json.load(open(paths.HISTORY, encoding="utf-8")) if os.path.exists(paths.HISTORY) else None
@@ -295,7 +307,7 @@ def update_history(items, textbooks):
         if k not in current:
             known[k]["gone"] = known[k].get("gone") or TODAY
     cutoff = (datetime.date.today() - datetime.timedelta(days=KEEP_CHANGES_DAYS)).isoformat()
-    hist["changes"] = [c for c in changes if c["date"] >= cutoff]
+    hist["changes"] = [c for c in changes if c["date"] >= cutoff and (c["type"] != "updated" or is_ncert_file(c.get("u")))]
     hist["items"] = {k: v for k, v in known.items() if not v.get("gone") or v["gone"] >= cutoff}
     tmp = paths.HISTORY + ".tmp"
     json.dump(hist, open(tmp, "w", encoding="utf-8"), ensure_ascii=False)
